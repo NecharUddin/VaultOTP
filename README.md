@@ -1,238 +1,585 @@
+# VaultOTP
 
-## v-1.0 Public Release
+**A self-hosted, web-based recovery-code vault for individuals and small teams.**
 
-This release fixes portable backup restoration for team accounts. Backups created by VaultOTP v-1.0.4 include the source installation encryption key inside the already-encrypted backup payload. Imported team accounts receive a one-time encrypted key migration and transparently re-wrap the current installation key on their first successful login. This preserves the user's existing password without storing or exporting plaintext passwords.
+VaultOTP lets you securely store and manage account recovery codes on your own hosting and database — without relying on a third-party cloud vault.
 
-It also fixes first-run setup version rendering and keeps numeric recovery codes as strings during parsing.
-## Previous development hotfix
+> **Author:** ItNexBD
+> **Website:** https://itnexbd.com
+> **Source / Issues:** https://github.com/NecharUddin/VaultOTP
 
-Fixes portable backup/sub-user vault encryption-key access after restore, including additional encrypted key-slot wrappers for users with multiple restored vault keys.
+![Version](https://img.shields.io/badge/version-v--1.0-5458cf?style=for-the-badge)
+![PHP](https://img.shields.io/badge/PHP-8.1%2B-777bb4?style=for-the-badge&logo=php&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-5.7%2B-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![License](https://img.shields.io/badge/license-Open--Source-brightgreen?style=for-the-badge)
 
-# VaultOTP v-1.0
+---
 
-VaultOTP is a self-hosted, web-based recovery-code vault for securely storing and managing account recovery codes. It is designed for individuals and small teams that want to keep recovery codes under their own hosting and database instead of relying on a third-party cloud vault.
+## ✨ Overview
 
-> **Author:** ItNexBD  
-> **Website:** https://itnexbd.com  
-> **Source / Issues:** https://github.com/NecharUddin
+VaultOTP is a self-hosted recovery-code management application designed for people and small teams who want to keep control of their sensitive recovery codes.
 
-## Highlights
+Instead of storing recovery codes in a third-party cloud service, VaultOTP stores the data on your own server and database.
 
-- Owner account with a protected master password
-- Optional employee/sub-user accounts
-- Per-user vault scope and independent permissions
-- Recovery codes encrypted at rest with libsodium
-- Reveal and copy controls
-- Used/unused code tracking with a short owner-safe undo window for the user who marked a code used
-- 10-code pagination with All / Unused / Used filters and Latest / Oldest sorting
-- Built-in platform library with local PNG icons
-- Custom platform support
-- Favorites, categories, search, and responsive UI
-- Auto-lock after inactivity
+It supports:
+
+- Secure encrypted recovery-code storage
+- Owner and employee/sub-user accounts
+- Per-user vault access and permissions
+- Recovery-code usage tracking
+- Platform management
+- Encrypted backups and restoration
 - Activity/audit logging
-- Owner audit center with up to 1,000 recent activities and per-user filtering
-- Encrypted, portable backups containing vaults, recovery codes, platforms, users, permissions, and selected-vault access
-- CSRF protection, secure sessions, login throttling, and prepared SQL statements
-- cPanel/MySQL-friendly deployment
+- Auto-lock and session security
+- Responsive web interface
 
-## Requirements
+---
 
-- PHP 8.1+ recommended
-- MySQL 5.7+ or MySQL-compatible server
-- PDO MySQL extension
-- libsodium extension
-- HTTPS strongly recommended and required for production use
-- PHP file upload support for TXT, PNG, and backup files
+## 📦 Download
 
-## Installation
+The recommended way to install VaultOTP is to download the latest release package from GitHub Releases.
 
-1. Create a MySQL database and database user in cPanel.
-2. Grant the database user full privileges on the database.
-3. Upload the contents of the VaultOTP package to your web root.
-4. Open `setup.php` in a browser.
-5. Enter the database connection details and create an owner/master password of at least 12 characters.
-6. Complete setup and sign in.
-7. Confirm that HTTPS is enabled before storing real recovery codes.
+**Latest release:**
+https://github.com/NecharUddin/VaultOTP/releases/latest
 
-The installer creates the application tables and writes `app/config.local.php`. Database credentials are not hard-coded into the public application files.
+The release package contains the files required to deploy VaultOTP on your own hosting.
 
-## Database schema
+After downloading the ZIP:
 
-The application uses these main tables:
+1. Extract the package.
+2. Upload the extracted files to your web hosting.
+3. Open `setup.php`.
+4. Complete the installation.
 
-- `settings` — installation-wide security settings and encrypted data-key metadata
-- `platforms` — built-in and custom platform definitions
-- `vaults` — vault/service metadata
-- `codes` — encrypted recovery-code records and used/unused attribution
-- `activity` — security and audit events
-- `users` — owner and sub-user accounts
-- `user_permissions` — global action permissions
-- `vault_access` — per-vault access and action permissions
+> The GitHub repository contains the source code. Release ZIP files are provided as convenient deployment packages.
 
-`install.sql` is provided as a manual database fallback. The normal installation path is `setup.php`.
+---
 
-## Security model
+## 🚀 Features
 
-### Encryption at rest
+### 🔐 Security
 
-Recovery codes are protected with libsodium Secretbox. The application uses a stable random data-encryption key for vault data and wraps that key for authorized users using password-derived keys. This allows multiple authorized users to access the same encrypted vault without sharing the owner password.
+- Recovery codes encrypted at rest using **libsodium Secretbox**
+- Password-based key protection
+- Secure password hashing
+- Argon2id support when available
+- CSRF protection
+- Secure session handling
+- HTTP-only session cookies
+- `SameSite=Strict` cookies
+- Session ID regeneration after authentication
+- Login throttling
+- Automatic inactivity locking
+- PDO prepared statements
+- Recovery codes never written to the activity log
+
+### 👤 User Management
+
+- Owner/master account
+- Employee/sub-user accounts
+- Viewer, Member, and Manager organizational labels
+- Per-user vault scope
+- Selected-vault access
+- All-vault access
+- Independent permissions for each user
+
+### 🗄️ Vault Management
+
+- Multiple vaults
+- Vault categories
+- Favorites
+- Search
+- Platform association
+- Vault editing
+- Vault deletion
+- Responsive vault interface
+
+### 🔑 Recovery Codes
+
+- Add recovery codes manually
+- Import recovery codes from TXT files (one code per line)
+- Automatic duplicate removal
+- Reveal codes
+- Copy codes
+- Mark codes as used/unused
+- Delete codes
+- Pagination
+- All / Unused / Used filters
+- Latest / Oldest sorting
+
+### 🧩 Platform Management
+
+- Built-in platform library
+- Local PNG platform icons
+- Custom platforms
+- Custom platform icons
+- Hide built-in platforms
+- Restore built-in platforms
+
+Removing a platform definition does not delete existing vault data associated with it.
+
+### 👥 Team Access
+
+VaultOTP allows the owner to create employee/sub-user accounts without sharing the owner password.
+
+Users can be given access to:
+
+- Specific vaults
+- All current and future vaults
+
+Permissions can be controlled independently.
+
+### 💾 Encrypted Backups
+
+VaultOTP supports portable encrypted backups containing protected application data such as:
+
+- Vaults
+- Recovery codes
+- Platforms
+- Users
+- Permissions
+- Vault access rules
+- User key metadata
+
+Backups use the `.votp` format and are protected with a dedicated backup password.
+
+### 📋 Activity Logging
+
+VaultOTP maintains an audit trail of important actions.
+
+The owner can access a dedicated Activities page with:
+
+- Up to 1,000 recent activities
+- All-user audit stream
+- Per-user filtering
+- Latest / Oldest sorting
+- Actor information
+- Vault information when applicable
+- Code action identifiers
+
+Plaintext recovery codes are never stored in the activity log.
+
+---
+
+## 🧰 Requirements
+
+| Requirement | Details |
+|---|---|
+| PHP | 8.1+ |
+| Database | MySQL 5.7+ or compatible MySQL/MariaDB server |
+| PHP Extensions | PDO MySQL, libsodium |
+| HTTPS | Strongly recommended; required for production use |
+| File Uploads | Required for TXT imports, platform icons, and backup files |
+| Web Server | Apache or another PHP-compatible web server |
+
+VaultOTP is designed to work well with common shared hosting and cPanel environments.
+
+---
+
+## 🚀 Installation
+
+### 1. Create a Database
+
+Create a MySQL/MariaDB database and database user from your hosting control panel.
+Grant the database user the required privileges on the VaultOTP database.
+
+### 2. Upload VaultOTP
+
+Download the latest release ZIP:
+https://github.com/NecharUddin/VaultOTP/releases/latest
+
+Extract the package and upload its contents to your website's web root. For example:
+
+```text
+public_html/
+├── app/
+├── assets/
+├── setup.php
+├── index.php
+├── login.php
+└── ...
+```
+
+### 3. Run the Installer
+
+Open:
+```
+https://your-domain.com/setup.php
+```
+
+Enter:
+
+- Database host
+- Database name
+- Database username
+- Database password
+- Owner/master password
+
+> The owner password must be at least 12 characters.
+
+### 4. Complete Setup
+
+The installer creates the required database tables and generates `app/config.local.php`.
+
+Database credentials are not hard-coded into the public application source files.
+
+### 5. Sign In
+
+After setup is complete, sign in using the owner account.
+
+### 6. Enable HTTPS
+
+Before storing real recovery codes, make sure the installation is served over HTTPS.
+
+> `install.sql` is included as a manual database fallback. The recommended installation method is `setup.php`.
+
+---
+
+## 🗄️ Database Schema
+
+VaultOTP uses several tables to manage encrypted data, users, permissions, and key metadata.
+
+| Table | Purpose |
+|---|---|
+| `settings` | Installation-wide settings and encryption metadata |
+| `platforms` | Built-in and custom platform definitions |
+| `vaults` | Vault metadata and vault encryption-key references |
+| `codes` | Encrypted recovery-code records and usage attribution |
+| `activity` | Security and audit events |
+| `users` | Owner and employee/sub-user accounts |
+| `user_permissions` | Global user permissions |
+| `vault_access` | Per-vault access and action permissions |
+| `data_key_slots` | Encrypted data-key slots used for protected vault-key management |
+| `user_data_key_slots` | Encrypted vault-key wrappers for authorized users |
+| `user_key_migrations` | One-time compatibility metadata for applicable restored user keys |
+
+---
+
+## 🔐 Security Model
+
+### Encryption at Rest
+
+Recovery codes are encrypted at rest using libsodium Secretbox.
+
+VaultOTP uses encryption keys that are protected separately from the stored recovery-code ciphertext. Key-slot and user-specific wrappers allow authorized users to access encrypted vault data without sharing the owner's password.
+
+Sensitive encryption keys are not stored as plaintext database values.
 
 ### Passwords
 
-Passwords are stored as password hashes. The application prefers Argon2id when available and falls back to PHP's default password hashing algorithm when necessary.
+User passwords are stored as secure password hashes. VaultOTP prefers Argon2id when available and otherwise uses PHP's secure password hashing facilities.
+
+Plaintext passwords are not exported as part of normal backups.
 
 ### Sessions
 
-Sessions use secure cookie attributes where HTTPS is available, HTTP-only cookies, SameSite Strict, session ID regeneration after authentication, and inactivity-based locking.
+VaultOTP uses multiple session-security measures, including:
 
-### CSRF and SQL safety
+- HTTP-only cookies
+- `SameSite=Strict`
+- Secure cookie settings when HTTPS is available
+- Session ID regeneration after authentication
+- Inactivity-based locking
 
-State-changing forms require CSRF validation. Database operations use PDO prepared statements rather than interpolating user input into SQL.
+### CSRF Protection
 
-### Activity log safety
+State-changing requests are protected with CSRF tokens. Requests without a valid CSRF token are rejected.
 
-The audit log records what action happened, who performed it, which vault was involved when applicable, and when it happened. Plaintext recovery codes are never written to the activity log. Code-related events use a code ID so an owner can identify the affected record without exposing the secret itself.
+### SQL Injection Protection
 
-## Owner and sub-users
+Database operations use PDO prepared statements. User-controlled values are not directly interpolated into SQL queries.
 
-The owner is the administrator of the installation. Employee accounts can be created from **Users** without sharing the master password.
+### Activity Log Protection
+
+The activity log records actions without storing plaintext recovery codes. Code-related events reference internal identifiers rather than writing the recovery-code secret itself to the log.
+
+---
+
+## 👥 Owner and Sub-Users
+
+The owner is the administrator of the VaultOTP installation. Employee/sub-user accounts can be created without sharing the owner's master password.
 
 ### Roles
 
-The role label (`Viewer`, `Member`, or `Manager`) is an organizational label only. It does **not** grant access. Actual access comes from the explicit permissions.
+VaultOTP provides organizational role labels:
 
-### Vault scope
+- Viewer
+- Member
+- Manager
 
-A user can receive either:
+These labels are descriptive only. A role label does not automatically grant permissions. Actual access is determined by the user's configured permissions and vault scope.
 
-- Access to selected vaults, or
-- **Give access to all vaults**, which includes current and future vaults.
+### Vault Scope
 
-All-vault access is a scope setting only. It never grants actions by itself.
+A user can receive:
 
-### Independent permissions
+**Selected Vault Access** — Access to specific vaults chosen by the owner.
 
-Global permissions:
+**All-Vault Access** — Access to all current and future vaults.
+
+> All-vault access controls scope only. It does not automatically grant actions such as revealing, copying, editing, or deleting data.
+
+---
+
+## 🔑 Permissions
+
+### Global Permissions
+
+Users can be granted permissions such as:
 
 - Create vaults
 - Manage platforms
 - Manage backups
-- View activity log
+- View activity information
 
-Vault/code permissions:
+### Vault and Code Permissions
 
-- Reveal codes
-- Copy codes
+Users can independently receive permissions to:
+
+- Reveal recovery codes
+- Copy recovery codes
 - Add recovery codes
-- Mark codes used / unused
+- Mark codes as used
+- Mark codes as unused
 - Delete recovery codes
 - Edit vault details
 - Delete vaults
 
-The UI hides actions the user is not allowed to perform, and the server validates the same permissions again.
+The interface hides actions that the user is not allowed to perform. The server also validates permissions independently on every protected request.
 
-### Used/unused safety rule
+---
 
-When a sub-user marks a recovery code as used, that same user can undo their own action for a limited 15-minute window. A different employee cannot undo another employee's status change. The owner retains administrative control.
+## ⏱️ Used/Unused Safety Rule
 
-## Recovery codes
+When a sub-user marks a recovery code as used, that same user has a **15-minute window** to undo their own action.
 
-Open a vault to see its recovery codes. Codes can be:
+A different employee cannot undo another employee's usage action. The owner retains administrative control over recovery-code status.
 
-- Filtered by **All**, **Unused**, or **Used**
-- Sorted **Latest first** or **Oldest first**
-- Viewed 10 per page
-- Revealed only when the user has permission
-- Copied only when the user has permission
-- Marked used/unused only when the user has permission
-- Deleted only when the user has permission
+---
 
-TXT import accepts one recovery code per line. Duplicate codes are skipped automatically.
+## 🔑 Recovery Codes
 
-## Platforms
+Recovery codes can be imported from TXT files or added through the VaultOTP interface.
 
-The Platforms page contains built-in services with local PNG icons. Owners or users with the platform-management permission can add custom platforms, upload icons, hide built-in platforms, and restore the built-in platform set. Removing a platform definition does not delete existing vault data.
+TXT imports use one recovery code per line. Duplicate codes are automatically skipped.
 
-## Backups
+Recovery codes can be:
 
-VaultOTP backups use an encrypted `.votp` format. Backup creation requires a dedicated backup password of at least 12 characters. The same backup password is required to restore the file.
+- Filtered by All / Unused / Used
+- Sorted by Latest / Oldest
+- Revealed
+- Copied
+- Marked used/unused
+- Deleted
 
-A backup can contain:
+The recovery-code list displays 10 codes per page. All actions are subject to the user's permissions.
 
-- Vaults and vault metadata
-- Recovery codes and used/unused state
-- Custom platforms and their icons
-- Users and account metadata
-- User password/key wrappers
+---
+
+## 🧩 Platforms
+
+The Platforms page provides a built-in platform library with local PNG icons.
+
+Authorized users can:
+
+- Add custom platforms
+- Upload custom platform icons
+- Hide built-in platforms
+- Restore built-in platforms
+
+A platform definition is separate from the vault data associated with it. Therefore, removing or hiding a platform does not automatically delete existing vaults or recovery codes.
+
+---
+
+## 💾 Backups
+
+VaultOTP supports encrypted portable backups using the `.votp` file format.
+
+### Backup Password
+
+Creating or restoring a backup requires a dedicated backup password.
+
+- The backup password must be at least 12 characters.
+- The backup password is separate from the normal VaultOTP login/master password.
+
+### Backup Contents
+
+Depending on the installation, a backup can contain protected information including:
+
+- Vault metadata
+- Encrypted recovery codes
+- Used/unused recovery-code state
+- Platform definitions
+- Platform icons
+- User accounts
+- User key metadata
 - Global permissions
 - Selected-vault permissions
-- All-vault scope
+- All-vault access settings
+- Encryption key metadata required for portable restoration
 
-The owner account is never blindly overwritten during restore. Existing installations should still be backed up before importing a large or unfamiliar backup.
+VaultOTP's portable backup system is designed to preserve the encryption relationships required for authorized users to continue accessing restored vaults.
 
-**Important:** A backup password is separate from the login/master password. Store it securely. Anyone who has both the backup file and its password may be able to restore the protected data.
+### ⚠️ Important Backup Warning
 
-## Activity center
+The backup password is **not** the same thing as the VaultOTP login password. Store the backup password securely and separately.
 
-Owners have a dedicated **Activities** page in the main navigation. It provides:
+Anyone who obtains a protected backup file and its backup password may be able to restore the protected data. Treat both as sensitive secrets.
 
-- Up to the latest 1,000 activity records
-- All users in one audit stream
-- Filtering by individual user
-- Latest-first and oldest-first sorting
-- Actor username/display name
-- Vault name when applicable
-- Code action identifiers for auditability
+---
 
-Sub-users do not receive the owner audit center. If granted the activity permission, they can view their own recent activity.
+## 📋 Activity Center
 
-## Support and issue reporting
+The owner has access to a dedicated Activities page. It provides up to the latest 1,000 activity records and supports:
 
-If you encounter an error or unexpected behavior, open an issue at:
+- All-user activity view
+- Individual user filtering
+- Latest-first sorting
+- Oldest-first sorting
+- Actor username/display information
+- Vault information where applicable
+- Code action identifiers
 
-[https://github.com/NecharUddin](https://github.com/NecharUddin/VaultOTP/issues)
+The activity system is designed to provide accountability without exposing plaintext recovery codes.
+
+---
+
+## 🛡️ Production Security Checklist
+
+Before using VaultOTP with real recovery codes:
+
+- [ ] Enable HTTPS
+- [ ] Use a strong and unique owner password
+- [ ] Use an updated PHP version
+- [ ] Keep MySQL/MariaDB updated
+- [ ] Restrict database credentials to the required database
+- [ ] Keep encrypted backups
+- [ ] Store backup passwords securely
+- [ ] Give employees only the permissions they require
+- [ ] Review the Activities page regularly
+- [ ] Protect `app/config.local.php`
+- [ ] Keep the `data/` directory protected
+- [ ] Never commit production data to Git
+- [ ] Never upload real recovery codes to GitHub
+- [ ] Never upload database credentials or server secrets to GitHub
+- [ ] Never post recovery codes, passwords, cookies, or backup passwords in public issues
+
+---
+
+## 🐞 Bug Reports and Issues
+
+If you find a bug or unexpected behavior, please open an issue:
+https://github.com/NecharUddin/VaultOTP/issues
 
 When reporting a problem, include:
 
 1. VaultOTP version
 2. PHP version
-3. MySQL/MariaDB version if known
+3. MySQL/MariaDB version
 4. Browser and operating system
-5. The page/action where the problem occurred
+5. The page or action where the problem occurred
 6. The exact error message
-7. Relevant server/PHP error-log details with passwords, recovery codes, database credentials, and other secrets removed
-8. Steps to reproduce the issue
+7. Relevant PHP/server error-log information
+8. Steps required to reproduce the problem
 
-Never post recovery codes, passwords, database credentials, session cookies, or backup passwords in a public issue.
+Before posting logs, remove:
 
-## Production checklist
+- Recovery codes
+- Passwords
+- Database credentials
+- Session cookies
+- Backup passwords
+- API keys
+- Other private information
 
-Before using VaultOTP with real recovery codes:
+**Never post real recovery codes or credentials in a public GitHub issue.**
 
-- Enable HTTPS.
-- Use a strong unique owner password.
-- Keep PHP and MySQL updated.
-- Restrict database credentials to the required database.
-- Keep regular encrypted backups.
-- Store backup passwords separately and securely.
-- Give employees only the permissions they need.
-- Review the Activities page regularly.
-- Do not expose `app/config.local.php` publicly.
-- Keep the `data/` directory protected by the included `.htaccess`.
-- Never paste secrets into GitHub issues or source control.
+---
 
-## Open-source publishing
+## 🤝 Contributing
 
-VaultOTP v-1.0 is prepared for publication as an open-source project. Before publishing, review the repository for environment-specific configuration, test data, personal recovery codes, generated backups, and server credentials. Do not commit `app/config.local.php`, real backup files, or production data.
+Contributions, bug reports, security improvements, documentation improvements, and feature suggestions are welcome.
 
-## Versioning
+Before submitting a pull request:
 
-The public release line starts at **VaultOTP v-1.0**. Future releases should use semantic-style versioning where practical (for example, `1.0.1`, `1.1.0`, `2.0.0`) and document user-visible or security-relevant changes in the release notes.
+- Keep changes focused.
+- Do not include real user data or secrets.
+- Do not commit production configuration files.
+- Explain what was changed.
+- Explain how the change was tested.
+- Keep security-sensitive changes clearly documented.
 
-## Credits
+For security-sensitive issues, avoid publicly posting exploitable details or private credentials in an issue.
+
+---
+
+## 📂 Repository Structure
+
+A typical VaultOTP installation contains:
+
+```text
+VaultOTP/
+├── app/
+├── assets/
+├── setup.php
+├── index.php
+├── login.php
+├── README.md
+├── LICENSE
+├── .gitignore
+└── ...
+```
+
+The exact file structure may change between releases.
+
+---
+
+## 🔒 Sensitive Files
+
+Do not commit or publicly distribute environment-specific or production-sensitive files.
+
+In particular, do not commit:
+
+- `app/config.local.php`
+- Real recovery codes
+- Production databases
+- Backup files
+- Database credentials
+- API keys
+- Private keys
+- Session data
+
+The repository should contain source code and example/configuration templates only.
+
+---
+
+## 📜 License
+
+VaultOTP is distributed under the license included in the repository: [`LICENSE`](./LICENSE)
+
+Please read the complete license before redistributing or modifying VaultOTP.
+
+---
+
+## 🏷️ Versioning
+
+The initial public release is **VaultOTP v-1.0**.
+
+Future releases may use versions such as `1.0.1`, `1.1.0`, `2.0.0`. Security fixes and important user-visible changes should be documented in the corresponding GitHub release notes.
+
+---
+
+## 🙌 Credits
 
 VaultOTP is built and maintained by **ItNexBD**.
 
-Website: https://itnexbd.com
+- Website: https://itnexbd.com
+- GitHub: https://github.com/NecharUddin
 
-GitHub: https://github.com/NecharUddin
+---
+
+## ⚠️ Disclaimer
+
+VaultOTP is provided as self-hosted software. You are responsible for securing your own hosting environment, database, server, domain, backups, passwords, and deployment.
+
+Always test backups and restoration procedures before relying on VaultOTP for critical recovery information. Never store secrets on a server you do not trust.
