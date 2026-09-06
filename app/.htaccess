@@ -1,1 +1,4 @@
-
+Options -Indexes
+<FilesMatch "^(config\.local\.php|.*\.log)$">
+    Require all denied
+</FilesMatch>
