@@ -1,0 +1,5 @@
+app/config.local.php
+*.votp
+/data/*
+!data/.htaccess
+.DS_Store
