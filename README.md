@@ -190,7 +190,7 @@ Sub-users do not receive the owner audit center. If granted the activity permiss
 
 If you encounter an error or unexpected behavior, open an issue at:
 
-https://github.com/NecharUddin
+[https://github.com/NecharUddin](https://github.com/NecharUddin/VaultOTP/issues)
 
 When reporting a problem, include:
 
